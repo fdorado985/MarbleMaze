@@ -23,3 +23,7 @@ Respond to device tilting by steering a ball around a vortex maze.
 ## Tags
 The application was created in step-by-step, so if you want to look through each part, here are some tags that goes through the developing path.
 
+### loading-a-level
+| Screenshot 01 |
+| ------------- |
+| ![ss01](.screenshots/ss01.png) |
