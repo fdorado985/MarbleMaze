@@ -8,6 +8,7 @@
 
 import SpriteKit
 import GameplayKit
+import CoreMotion
 
 enum CollisionTypes: UInt32 {
   case player = 1
@@ -23,6 +24,7 @@ class GameScene: SKScene {
 
   var player: SKSpriteNode!
   var lastTouchPosition: CGPoint?
+  var motionManager: CMMotionManager!
 
   // MARK: - Scene cycle
 
@@ -36,6 +38,10 @@ class GameScene: SKScene {
     addChild(background)
 
     physicsWorld.gravity = .zero
+
+    // accelerometer
+    motionManager = CMMotionManager()
+    motionManager.startAccelerometerUpdates()
 
     loadLevel()
     createPlayer()
@@ -62,10 +68,16 @@ class GameScene: SKScene {
   // MARK: - Update
 
   override func update(_ currentTime: TimeInterval) {
+    #if targetEnvironment(simulator)
     if let currentTouch = lastTouchPosition {
       let diff = CGPoint(x: currentTouch.x - player.position.x, y: currentTouch.y - player.position.y)
       physicsWorld.gravity = CGVector(dx: diff.x / 100, dy: diff.y / 100)
     }
+    #else
+    if let accelerometerData = motionManager.accelerometerData {
+      physicsWorld.gravity = CGVector(dx: accelerometerData.acceleration.y * -50, dy: accelerometerData.acceleration.x * 50)
+    }
+    #endif
   }
 
   // MARK: - Methods
