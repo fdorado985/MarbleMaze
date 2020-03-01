@@ -32,3 +32,8 @@ The application was created in step-by-step, so if you want to look through each
 | Screenshot 02 |
 | ------------- |
 | ![ss02](.screenshots/ss02.png) |
+
+### contacting-but-not-coliding
+| Screenshot 03 | Screenshot 04 |
+| ------------- | ------------- |
+| ![ss03](.screenshots/ss03.png) | ![ss04](.screenshots/ss04.png) |
