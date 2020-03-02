@@ -25,29 +25,25 @@ class GameScene: SKScene {
   var player: SKSpriteNode!
   var scoreLabel: SKLabelNode!
   var nextButton: SKSpriteNode?
+  var gameOver: SKSpriteNode?
 
   var score = 0 { didSet { scoreLabel.text = "Score: \(score)" } }
   var isGameOver = false
   var lastTouchPosition: CGPoint?
   var motionManager: CMMotionManager!
+  var level = 1
 
   // MARK: - Scene cycle
 
+  func startGame() {
+    createBackground()
+    createScoreLabel()
+    loadLevel()
+    createPlayer()
+  }
+
   override func didMove(to view: SKView) {
     super.didMove(to: view)
-
-    let background = SKSpriteNode(imageNamed: "background.jpg")
-    background.position = CGPoint(x: 512, y: 384)
-    background.blendMode = .replace
-    background.zPosition = -1
-    addChild(background)
-
-    scoreLabel = SKLabelNode(fontNamed: "Chalkduster")
-    scoreLabel.text = "Score: 0"
-    scoreLabel.horizontalAlignmentMode = .left
-    scoreLabel.position = CGPoint(x: 16, y: 16)
-    scoreLabel.zPosition = 2
-    addChild(scoreLabel)
 
     physicsWorld.gravity = .zero
     physicsWorld.contactDelegate = self
@@ -56,8 +52,7 @@ class GameScene: SKScene {
     motionManager = CMMotionManager()
     motionManager.startAccelerometerUpdates()
 
-    loadLevel()
-    createPlayer()
+    startGame()
   }
 
   // MARK: - Touch Events
@@ -81,7 +76,7 @@ class GameScene: SKScene {
     guard let touch = touches.first else { return }
     let location = touch.location(in: self)
     if nextButton.contains(location) {
-        print("Go to next level")
+      goToNextLevel()
     }
   }
 
@@ -104,14 +99,34 @@ class GameScene: SKScene {
 
   // MARK: - Methods
 
+  func createBackground() {
+    let background = SKSpriteNode(imageNamed: "background.jpg")
+    background.position = CGPoint(x: 512, y: 384)
+    background.blendMode = .replace
+    background.zPosition = -1
+    addChild(background)
+  }
+
+  func createScoreLabel() {
+    scoreLabel = SKLabelNode(fontNamed: "Chalkduster")
+    scoreLabel.text = "Score: 0"
+    scoreLabel.horizontalAlignmentMode = .left
+    scoreLabel.position = CGPoint(x: 16, y: 16)
+    scoreLabel.zPosition = 2
+    addChild(scoreLabel)
+  }
+
   func createGameOverNode() {
-    let gameOver = SKSpriteNode(imageNamed: "gameOver")
+    level += 1
+    gameOver = SKSpriteNode(imageNamed: "gameOver")
+    guard let gameOver = self.gameOver else { return }
     gameOver.position = CGPoint(x: 512, y: 384)
     gameOver.zPosition = 1
     addChild(gameOver)
   }
 
   func createNextLevelNode() {
+    guard level <= 2 else { return }
     nextButton = SKSpriteNode(imageNamed: "next")
     guard let nextButton = self.nextButton else { return }
     nextButton.position = CGPoint(x: 512, y: 284)
@@ -169,7 +184,15 @@ class GameScene: SKScene {
     addChild(node)
   }
 
-  func loadLevel(_ level: Int = 1) {
+  func goToNextLevel() {
+    isGameOver = false
+    self.nextButton = nil
+    self.gameOver = nil
+    self.removeAllChildren()
+    startGame()
+  }
+
+  func loadLevel() {
     guard let levelURL = Bundle.main.url(forResource: "level\(level)", withExtension: "txt") else {
       fatalError("Could not find level\(level).txt in the app bundle.")
     }
