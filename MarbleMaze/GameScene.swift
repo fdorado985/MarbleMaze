@@ -96,6 +96,14 @@ class GameScene: SKScene {
 
   // MARK: - Methods
 
+  func createGameOverNode() {
+    isGameOver = true
+    let gameOver = SKSpriteNode(imageNamed: "gameOver")
+    gameOver.position = CGPoint(x: 512, y: 384)
+    gameOver.zPosition = 1
+    addChild(gameOver)
+  }
+
   func createBlock(_ position: CGPoint) {
     let node = SKSpriteNode(imageNamed: "block")
     node.position = position
@@ -146,13 +154,13 @@ class GameScene: SKScene {
     addChild(node)
   }
 
-  func loadLevel() {
-    guard let levelURL = Bundle.main.url(forResource: "level1", withExtension: "txt") else {
-      fatalError("Could not find level1.txt in the app bundle.")
+  func loadLevel(_ level: Int = 1) {
+    guard let levelURL = Bundle.main.url(forResource: "level\(level)", withExtension: "txt") else {
+      fatalError("Could not find level\(level).txt in the app bundle.")
     }
 
     guard let levelString = try? String(contentsOf: levelURL) else {
-      fatalError("Could not load level1.txt from the app bundle.")
+      fatalError("Could not load level\(level).txt from the app bundle.")
     }
 
     let lines = levelString.components(separatedBy: "\n")
@@ -211,7 +219,7 @@ class GameScene: SKScene {
       node.removeFromParent()
       score += 1
     } else if node.name == "finish" {
-      // next level?
+      createGameOverNode()
     }
   }
 }
