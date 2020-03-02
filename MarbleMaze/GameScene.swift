@@ -24,6 +24,7 @@ class GameScene: SKScene {
 
   var player: SKSpriteNode!
   var scoreLabel: SKLabelNode!
+  var nextButton: SKSpriteNode?
 
   var score = 0 { didSet { scoreLabel.text = "Score: \(score)" } }
   var isGameOver = false
@@ -75,6 +76,13 @@ class GameScene: SKScene {
 
   override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
     lastTouchPosition = nil
+
+    guard let nextButton = self.nextButton else { return }
+    guard let touch = touches.first else { return }
+    let location = touch.location(in: self)
+    if nextButton.contains(location) {
+        print("Go to next level")
+    }
   }
 
   // MARK: - Update
@@ -97,11 +105,18 @@ class GameScene: SKScene {
   // MARK: - Methods
 
   func createGameOverNode() {
-    isGameOver = true
     let gameOver = SKSpriteNode(imageNamed: "gameOver")
     gameOver.position = CGPoint(x: 512, y: 384)
     gameOver.zPosition = 1
     addChild(gameOver)
+  }
+
+  func createNextLevelNode() {
+    nextButton = SKSpriteNode(imageNamed: "next")
+    guard let nextButton = self.nextButton else { return }
+    nextButton.position = CGPoint(x: 512, y: 284)
+    nextButton.zPosition = 1
+    addChild(nextButton)
   }
 
   func createBlock(_ position: CGPoint) {
@@ -219,7 +234,9 @@ class GameScene: SKScene {
       node.removeFromParent()
       score += 1
     } else if node.name == "finish" {
+      isGameOver = true
       createGameOverNode()
+      createNextLevelNode()
     }
   }
 }
